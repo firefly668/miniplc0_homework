@@ -125,19 +125,21 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
     next = nextToken();
     if (!next.has_value()) return std::make_optional<CompilationError>(
           _current_pos, ErrorCode::ErrNoSemicolon);
-    if (next.value().GetType() != TokenType::EQUAL_SIGN) {
-      unreadToken();
+    //不初始化
+    if (next.value().GetType() == TokenType::SEMICOLON){
       addUninitializedVariable(nextIdentity.value());
+      _instructions.emplace_back(Operation::LIT, 0);
     }
-    else{// '<表达式>'
+    //初始化
+    else if(next.value().GetType() == TokenType::EQUAL_SIGN){
       auto err = analyseExpression();
       if (err.has_value()) return err;
+      addVariable(nextIdentity.value());
     }
-    // ';'
-     next = nextToken();
-    if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
+    else{
       return std::make_optional<CompilationError>(_current_pos,
-                                                  ErrorCode::ErrNoSemicolon);
+                                                  ErrorCode::ErrDuplicateDeclaration);
+    }
   }
   return {};
 }
@@ -152,7 +154,9 @@ std::optional<CompilationError> Analyser::analyseStatementSequence() {
   while (true) {
     // 预读
     auto next = nextToken();
-    if (!next.has_value()) return {};
+    if (!next.has_value()) {
+      return {};
+    }
     unreadToken();
     if (next.value().GetType() != TokenType::IDENTIFIER &&
         next.value().GetType() != TokenType::PRINT &&
@@ -194,9 +198,9 @@ std::optional<CompilationError> Analyser::analyseConstantExpression(
   // +1 -1 1
   // 同时要注意是否溢出
   auto next = nextToken();
-  if(!next.has_value())
-  return std::make_optional<CompilationError>(_current_pos,
-                                            ErrorCode::ErrIncompleteExpression);
+  if(!next.has_value()){
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrIncompleteExpression);
+  }
   if(next.value().GetType()==TokenType::UNSIGNED_INTEGER){
     int32_t temp = atoi(next.value().GetValueString().c_str());
     out = temp;
@@ -204,33 +208,30 @@ std::optional<CompilationError> Analyser::analyseConstantExpression(
   }
   else if(next.value().GetType()==TokenType::PLUS_SIGN){
     auto next = nextToken();
-    if(!next.has_value())
-      return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrIncompleteExpression);
+    if(!next.has_value()){
+      return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrIncompleteExpression);
+    }
     if(next.value().GetType()==TokenType::UNSIGNED_INTEGER){
       int32_t temp = atoi(next.value().GetValueString().c_str());
       out = temp;
       return{};
     }
-    else return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrIncompleteExpression);
+    else return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrIncompleteExpression);
     
   }
   else if(next.value().GetType()==TokenType::MINUS_SIGN){
     auto next = nextToken();
-    if(!next.has_value())
-      return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrIncompleteExpression);
+    if(!next.has_value()){
+      return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrIncompleteExpression);
+    }
     if(next.value().GetType()==TokenType::UNSIGNED_INTEGER){
       int32_t temp = atoi(next.value().GetValueString().c_str());
       out = temp;
       return{};
     }
-    else return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrIncompleteExpression);
+    else return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrIncompleteExpression);
   }
-  else return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrIncompleteExpression);
+  else return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrIncompleteExpression);
 }
 
 // <表达式> ::= <项>{<加法型运算符><项>}
@@ -331,7 +332,7 @@ std::optional<CompilationError> Analyser::analyseOutputStatement() {
 // 需要补全
 std::optional<CompilationError> Analyser::analyseItem() {
   // 可以参考 <表达式> 实现
-   // <因子>
+  // <因子>
   auto err = analyseFactor();
   if (err.has_value()) return err;
 

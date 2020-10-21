@@ -37,10 +37,10 @@ TEST_CASE("Test hello world.") {
   for (int i = 0; i < result.first.size(); i++) {
     std::cout //<< result.first[i].GetType() << " "
               << result.first[i].GetValueString() << " "
-              << result.first[i].GetStartPos().first << " "
-              << result.first[i].GetStartPos().second << " "
-              << result.first[i].GetEndPos().first << " "
-              << result.first[i].GetEndPos().second
+              //<< result.first[i].GetStartPos().first << " "
+             // << result.first[i].GetStartPos().second << " "
+             // << result.first[i].GetEndPos().first << " "
+             // << result.first[i].GetEndPos().second
               << std::endl; 
   }
   if (result.second.has_value()) {
