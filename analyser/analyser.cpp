@@ -73,6 +73,8 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   auto bg = nextToken();
   if (!bg.has_value() || bg.value().GetType() != TokenType::BEGIN)
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoBegin);
+    _instructions.emplace_back(Operation::LIT, 4);
+    _instructions.emplace_back(Operation::WRT, 0);
 
   // <主过程>
   auto err = analyseMain();
@@ -110,6 +112,8 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
   // 常量声明语句可能有 0 或无数个
   while (true) {
     // 预读一个 token，不然不知道是否应该用 <常量声明> 推导
+    _instructions.emplace_back(Operation::LIT, -1);
+    _instructions.emplace_back(Operation::WRT, 0);
     auto next = nextToken();
     if (!next.has_value()) return {};
     // 如果是 const 那么说明应该推导 <常量声明> 否则直接返回
@@ -117,7 +121,8 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
       unreadToken();
       return {};
     }
-
+    _instructions.emplace_back(Operation::LIT, 7);
+    _instructions.emplace_back(Operation::WRT, 0);
     // <常量声明语句>
     next = nextToken();
     if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER){
@@ -127,13 +132,15 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
       return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
     }
     addConstant(next.value());
-
+    _instructions.emplace_back(Operation::LIT, 3);
+    _instructions.emplace_back(Operation::WRT, 0);
     // '='
     next = nextToken();
     if (!next.has_value() || next.value().GetType() != TokenType::EQUAL_SIGN)
       return std::make_optional<CompilationError>(
           _current_pos, ErrorCode::ErrConstantNeedValue);
-
+    _instructions.emplace_back(Operation::LIT, 7);
+    _instructions.emplace_back(Operation::WRT, 0);
     // <常表达式>
     int32_t val;
     auto err = analyseConstantExpression(val);
@@ -144,6 +151,8 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
     if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON){
       return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoSemicolon);
     }
+    _instructions.emplace_back(Operation::LIT, 14);
+    _instructions.emplace_back(Operation::WRT, 0);
     // 生成一次 LIT 指令加载常量
     _instructions.emplace_back(Operation::LIT, val);
     _instructions.emplace_back(Operation::LIT, val);
