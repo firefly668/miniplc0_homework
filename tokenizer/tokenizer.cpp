@@ -147,7 +147,7 @@ Tokenizer::nextToken() {
             return std::make_pair(std::optional<Token>(),
             std::make_optional<CompilationError>(pos,
             ErrorCode::ErrIntegerOverflow)); 
-          return std::make_pair(std::make_optional<Token>(TokenType::UNSIGNED_INTEGER,temp,pos,currentPos()),
+          return std::make_pair(std::make_optional<Token>(TokenType::UNSIGNED_INTEGER,ss.str(),pos,currentPos()),
                                 std::optional<CompilationError>());
         }
         //     解析成功则返回无符号整数类型的token，否则返回编译错误 
@@ -164,7 +164,7 @@ Tokenizer::nextToken() {
             return std::make_pair(std::optional<Token>(),
             std::make_optional<CompilationError>(pos,
             ErrorCode::ErrIntegerOverflow));
-          return std::make_pair(std::make_optional<Token>(TokenType::UNSIGNED_INTEGER,temp,pos,currentPos()),
+          return std::make_pair(std::make_optional<Token>(TokenType::UNSIGNED_INTEGER,ss.str(),pos,currentPos()),
                                 std::optional<CompilationError>());
         }
 
