@@ -79,9 +79,9 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   if (err.has_value()) return err;
 
   // 'end'
-  /*auto ed = nextToken();
+  auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
-    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);*/
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);
   return {};
 }
 
@@ -146,6 +146,8 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
     }
     // 生成一次 LIT 指令加载常量
     _instructions.emplace_back(Operation::LIT, val);
+    _instructions.emplace_back(Operation::LIT, val);
+    _instructions.emplace_back(Operation::WRT, 0);
   }
   return {};
 }
@@ -432,8 +434,7 @@ std::optional<CompilationError> Analyser::analyseFactor() {
   // 预读
   next = nextToken();
   if (!next.has_value())
-    return std::make_optional<CompilationError>(
-        _current_pos, ErrorCode::ErrIncompleteExpression);
+    return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
   switch (next.value().GetType()) {
       // 这里和 <语句序列> 类似，需要根据预读结果调用不同的子程序
       case TokenType::IDENTIFIER:{
@@ -451,14 +452,12 @@ std::optional<CompilationError> Analyser::analyseFactor() {
         if(err.has_value()) return err;
         next = nextToken();
         if(!next.has_value() || next.value().GetType()!=TokenType::RIGHT_BRACKET)
-          return std::make_optional<CompilationError>(
-              _current_pos, ErrorCode::ErrIncompleteExpression);
+          return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
         break;
       }
       // 但是要注意 default 返回的是一个编译错误
     default:
-      return std::make_optional<CompilationError>(
-          _current_pos, ErrorCode::ErrIncompleteExpression);
+      return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
   }
 
   // 取负
