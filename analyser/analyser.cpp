@@ -79,12 +79,12 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   // <主过程>
   auto err = analyseMain();
   if (err.has_value()) return err;
-  _instructions.emplace_back(Operation::LIT, -10);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -10);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   // 'end'
-  /*auto ed = nextToken();
+  auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
-    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);*/
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);
   return {};
 }
 
@@ -94,20 +94,20 @@ std::optional<CompilationError> Analyser::analyseMain(){
   // 完全可以参照 <程序> 编写
 
   // <常量声明>
-  _instructions.emplace_back(Operation::LIT, -1);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -1);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   auto err = analyseConstantDeclaration();
-  if (!err.has_value()) return err;
+  if (err.has_value()) return err;
   // <变量声明>
-  _instructions.emplace_back(Operation::LIT, -2);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -2);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   err = analyseVariableDeclaration();
-  if (!err.has_value()) return err;
+  if (err.has_value()) return err;
   // <语句序列>
-  _instructions.emplace_back(Operation::LIT, -3);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -3);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   err = analyseStatementSequence();
-  if (!err.has_value()) return err;
+  if (err.has_value()) return err;
   return {};
 }
 
@@ -115,7 +115,8 @@ std::optional<CompilationError> Analyser::analyseMain(){
 // <常量声明语句> ::= 'const'<标识符>'='<常表达式>';'
 std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
   // 示例函数，示例如何分析常量声明
-
+  /*_instructions.emplace_back(Operation::LIT, -1);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   // 常量声明语句可能有 0 或无数个
   while (true){
     /*_instructions.emplace_back(Operation::LIT, -1);
@@ -171,8 +172,8 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
 // 需要补全
 std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
   // 变量声明语句可能有一个或者多个
-  _instructions.emplace_back(Operation::LIT, -2);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -2);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   while(true){
     // 预读
     auto next = nextToken();
@@ -182,8 +183,8 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
       unreadToken();
       return {};
     }
-    _instructions.emplace_back(Operation::LIT, 6);
-    _instructions.emplace_back(Operation::WRT, 0);
+    /*_instructions.emplace_back(Operation::LIT, 6);
+    _instructions.emplace_back(Operation::WRT, 0);*/
     // <标识符>
     auto nextIdentity = nextToken();
     if (!nextIdentity.has_value() || nextIdentity.value().GetType() != TokenType::IDENTIFIER)
@@ -210,8 +211,8 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
       if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON){
         return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
       }
-      _instructions.emplace_back(Operation::LIT, 14);
-      _instructions.emplace_back(Operation::WRT, 0);
+      /*_instructions.emplace_back(Operation::LIT, 14);
+      _instructions.emplace_back(Operation::WRT, 0);*/
     }
     else{
       return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrDuplicateDeclaration);
@@ -227,8 +228,8 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
 // <空语句> :: = ';'
 // 需要补全
 std::optional<CompilationError> Analyser::analyseStatementSequence() {
-  _instructions.emplace_back(Operation::LIT, -3);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -3);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   while (true) {
     // 预读
     auto next = nextToken();
@@ -350,22 +351,22 @@ std::optional<CompilationError> Analyser::analyseAssignmentStatement() {
   // 需要生成指令吗？
   
   //获取标识符
-  _instructions.emplace_back(Operation::LIT, -4);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, -4);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   auto next = nextToken();
   if(!isDeclared(next.value().GetValueString()))
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNotDeclared);
   if(isConstant(next.value().GetValueString()))
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrAssignToConstant);
   int x = getIndex(next.value().GetValueString());
-  _instructions.emplace_back(Operation::LIT, 3);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, 3);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   //获取“=”
   next = nextToken();
   if(!next.has_value() || next.value().GetType()!=TokenType::EQUAL_SIGN) 
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrInvalidAssignment);
-  _instructions.emplace_back(Operation::LIT, 13);
-  _instructions.emplace_back(Operation::WRT, 0);                                      
+  /*_instructions.emplace_back(Operation::LIT, 13);
+  _instructions.emplace_back(Operation::WRT, 0);*/                                      
   //表达式
   auto err = analyseExpression();
   if(err.has_value()) return err;
@@ -373,8 +374,8 @@ std::optional<CompilationError> Analyser::analyseAssignmentStatement() {
   next = nextToken();
   if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoSemicolon);
-  _instructions.emplace_back(Operation::LIT, 14);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, 14);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   // 生成相应的指令 STO
   _instructions.emplace_back(Operation::STO, x);
   return {};
@@ -383,16 +384,16 @@ std::optional<CompilationError> Analyser::analyseAssignmentStatement() {
 // <输出语句> ::= 'print' '(' <表达式> ')' ';'
 std::optional<CompilationError> Analyser::analyseOutputStatement() {
   // 如果之前 <语句序列> 的实现正确，这里第一个 next 一定是 TokenType::PRINT
-  _instructions.emplace_back(Operation::LIT, 8);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, 8);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   auto next = nextToken();
 
   // '('
   next = nextToken();
   if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET)
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrInvalidPrint);
-  _instructions.emplace_back(Operation::LIT, 15);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, 15);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   // <表达式>
   auto err = analyseExpression();
   if (err.has_value()) return err;
@@ -401,15 +402,15 @@ std::optional<CompilationError> Analyser::analyseOutputStatement() {
   next = nextToken();
   if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET)
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrInvalidPrint);
-  _instructions.emplace_back(Operation::LIT, 16);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, 16);
+  _instructions.emplace_back(Operation::WRT, 0);*/
 
   // ';'
   next = nextToken();
   if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoSemicolon);
-  _instructions.emplace_back(Operation::LIT, 14);
-  _instructions.emplace_back(Operation::WRT, 0);
+  /*_instructions.emplace_back(Operation::LIT, 14);
+  _instructions.emplace_back(Operation::WRT, 0);*/
   // 生成相应的指令 WRT
   _instructions.emplace_back(Operation::WRT, 0);
   return {};
@@ -478,8 +479,8 @@ std::optional<CompilationError> Analyser::analyseFactor() {
       case TokenType::UNSIGNED_INTEGER:{
         int32_t x = atoi(next.value().GetValueString().c_str());
         _instructions.emplace_back(Operation::LIT, x);
-        _instructions.emplace_back(Operation::LIT, x);
-        _instructions.emplace_back(Operation::WRT, 0);
+        /*_instructions.emplace_back(Operation::LIT, x);
+        _instructions.emplace_back(Operation::WRT, 0);*/
         break;
       }
       case TokenType::LEFT_BRACKET:{
