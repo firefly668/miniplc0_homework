@@ -43,10 +43,10 @@ std::optional<CompilationError> Analyser::analyseMain() {
   auto err = analyseConstantDeclaration();
   if (!err.has_value())return err;
   // <变量声明>
-  auto err = analyseVariableDeclaration();
+  err = analyseVariableDeclaration();
   if (!err.has_value())return err;
   // <语句序列>
-  auto err = analyseStatementSequence();
+  err = analyseStatementSequence();
   if (!err.has_value())return err;
   return {};
 }
