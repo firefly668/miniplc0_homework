@@ -81,9 +81,9 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   if (err.has_value()) return err;
 
   // 'end'
-  auto ed = nextToken();
+  /*auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
-    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);*/
   return {};
 }
 
