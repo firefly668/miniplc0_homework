@@ -79,7 +79,8 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   // <主过程>
   auto err = analyseMain();
   if (err.has_value()) return err;
-
+  _instructions.emplace_back(Operation::LIT, -10);
+  _instructions.emplace_back(Operation::WRT, 0);
   // 'end'
   /*auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
@@ -93,16 +94,14 @@ std::optional<CompilationError> Analyser::analyseMain() {
   // 完全可以参照 <程序> 编写
 
   // <常量声明>
-  _instructions.emplace_back(Operation::LIT, -2);
-  _instructions.emplace_back(Operation::WRT, 0);
   auto err = analyseConstantDeclaration();
-  if (!err.has_value())return err;
+  if (!err.has_value()) return err;
   // <变量声明>
   err = analyseVariableDeclaration();
-  if (!err.has_value())return err;
+  if (!err.has_value()) return err;
   // <语句序列>
   err = analyseStatementSequence();
-  if (!err.has_value())return err;
+  if (!err.has_value()) return err;
   return {};
 }
 
@@ -119,7 +118,7 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
     auto next = nextToken();
     if (!next.has_value()) return {};
     // 如果是 const 那么说明应该推导 <常量声明> 否则直接返回
-    if (next.value().GetType() != TokenType::CONST) {
+    if (next.value().GetType() != TokenType::CONST){
       unreadToken();
       return {};
     }
@@ -141,7 +140,7 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
     if (!next.has_value() || next.value().GetType() != TokenType::EQUAL_SIGN)
       return std::make_optional<CompilationError>(
           _current_pos, ErrorCode::ErrConstantNeedValue);
-    _instructions.emplace_back(Operation::LIT, 7);
+    _instructions.emplace_back(Operation::LIT, 13);
     _instructions.emplace_back(Operation::WRT, 0);
     // <常表达式>
     int32_t val;
@@ -157,8 +156,6 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
     _instructions.emplace_back(Operation::WRT, 0);
     // 生成一次 LIT 指令加载常量
     _instructions.emplace_back(Operation::LIT, val);
-    _instructions.emplace_back(Operation::LIT, val);
-    _instructions.emplace_back(Operation::WRT, 0);
   }
   return {};
 }
