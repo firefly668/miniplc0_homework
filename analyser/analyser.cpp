@@ -73,8 +73,8 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   auto bg = nextToken();
   if (!bg.has_value() || bg.value().GetType() != TokenType::BEGIN)
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoBegin);
-    _instructions.emplace_back(Operation::LIT, 4);
-    _instructions.emplace_back(Operation::WRT, 0);
+  _instructions.emplace_back(Operation::LIT, 4);
+  _instructions.emplace_back(Operation::WRT, 0);
 
   // <主过程>
   auto err = analyseMain();
@@ -93,6 +93,8 @@ std::optional<CompilationError> Analyser::analyseMain() {
   // 完全可以参照 <程序> 编写
 
   // <常量声明>
+  _instructions.emplace_back(Operation::LIT, -2);
+  _instructions.emplace_back(Operation::WRT, 0);
   auto err = analyseConstantDeclaration();
   if (!err.has_value())return err;
   // <变量声明>
