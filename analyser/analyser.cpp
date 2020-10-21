@@ -15,7 +15,7 @@ Analyser::Analyse() {
 // <程序> ::= 'begin'<主过程>'end'
 std::optional<CompilationError> Analyser::analyseProgram() {
   // 示例函数，示例如何调用子程序
-  while(true){
+  /*while(true){
     auto token = nextToken();
     if(token.has_value()) {
       if(token.value().GetType()==TokenType::UNSIGNED_INTEGER){
@@ -68,8 +68,7 @@ std::optional<CompilationError> Analyser::analyseProgram() {
       continue;
     }
     break;
-  }
-  /*
+  }*/
   // 'begin'
   auto bg = nextToken();
   if (!bg.has_value() || bg.value().GetType() != TokenType::BEGIN)
@@ -82,7 +81,7 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   // 'end'
   auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
-    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);*/
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);
   return {};
 }
 
@@ -175,8 +174,9 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
           _current_pos, ErrorCode::ErrDuplicateDeclaration);
     // 变量可能没有初始化，仍然需要一次预读
     next = nextToken();
-    if (!next.has_value()) return std::make_optional<CompilationError>(
-          _current_pos, ErrorCode::ErrNoSemicolon);
+    if (!next.has_value()) {
+      return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
+    }
     //不初始化
     if (next.value().GetType() == TokenType::SEMICOLON){
       addUninitializedVariable(nextIdentity.value());
@@ -187,6 +187,11 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
       auto err = analyseExpression();
       if (err.has_value()) return err;
       addVariable(nextIdentity.value());
+      //“;”
+      next = nextToken();
+      if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON){
+        return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
+      }
     }
     else{
       return std::make_optional<CompilationError>(_current_pos,

@@ -11,7 +11,11 @@ TEST_CASE("Test hello world.") {
   
   std::string input =
           "begin\n"
-          "var a = 1;\n"
+          "const a = 2;\n"
+          "var b = 1;\n"
+          "var c = 0;\n"
+          "c = a + b;"
+          "print(c)"
           //"const b = 1\n"
          // "print(a+b);\n"
           "end\n";
