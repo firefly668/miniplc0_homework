@@ -36,15 +36,6 @@ Tokenizer::AllTokens() {
     }
     result.emplace_back(p.first.value());
   }
-  for (int i = 0; i < result.size(); i++) {
-    std::cout //<< result.first[i].GetType() << " "
-              << result[i].GetValueString() << " "
-              //<< result.first[i].GetStartPos().first << " "
-             // << result.first[i].GetStartPos().second << " "
-             // << result.first[i].GetEndPos().first << " "
-             // << result.first[i].GetEndPos().second
-              << std::endl; 
-  }
 }
 
 // 注意：这里的返回值中 Token 和 CompilationError 只能返回一个，不能同时返回。

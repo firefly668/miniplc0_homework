@@ -15,12 +15,65 @@ Analyser::Analyse() {
 // <程序> ::= 'begin'<主过程>'end'
 std::optional<CompilationError> Analyser::analyseProgram() {
   // 示例函数，示例如何调用子程序
-
+  while(true){
+    auto token = nextToken();
+    if(token.has_value()) {
+      if(token.value().GetType()==TokenType::UNSIGNED_INTEGER){
+        int32_t temp = atoi(token.value().GetValueString().c_str());
+        _instructions.emplace_back(Operation::LIT, temp);
+      }
+      else if(token.value().GetType()==TokenType::IDENTIFIER){
+        _instructions.emplace_back(Operation::LIT, 3);
+      }
+      else if(token.value().GetType()==TokenType::BEGIN){
+        _instructions.emplace_back(Operation::LIT, 4);
+      }
+      else if(token.value().GetType()==TokenType::END){
+        _instructions.emplace_back(Operation::LIT, 5);
+      }
+      else if(token.value().GetType()==TokenType::VAR){
+        _instructions.emplace_back(Operation::LIT, 6);
+      }
+      else if(token.value().GetType()==TokenType::CONST){
+        _instructions.emplace_back(Operation::LIT, 7);
+      }
+      else if(token.value().GetType()==TokenType::PRINT){
+        _instructions.emplace_back(Operation::LIT, 8);
+      }
+      else if(token.value().GetType()==TokenType::PLUS_SIGN){
+        _instructions.emplace_back(Operation::LIT, 9);
+      }
+      else if(token.value().GetType()==TokenType::MINUS_SIGN){
+        _instructions.emplace_back(Operation::LIT, 10);
+      }
+      else if(token.value().GetType()==TokenType::MULTIPLICATION_SIGN){
+        _instructions.emplace_back(Operation::LIT, 11);
+      }
+      else if(token.value().GetType()==TokenType::DIVISION_SIGN){
+        _instructions.emplace_back(Operation::LIT, 12);
+      }
+      else if(token.value().GetType()==TokenType::EQUAL_SIGN){
+        _instructions.emplace_back(Operation::LIT, 13);
+      }
+      else if(token.value().GetType()==TokenType::SEMICOLON){
+        _instructions.emplace_back(Operation::LIT, 14);
+      }
+      else if(token.value().GetType()==TokenType::LEFT_BRACKET){
+        _instructions.emplace_back(Operation::LIT, 15);
+      }
+      else if(token.value().GetType()==TokenType::RIGHT_BRACKET){
+        _instructions.emplace_back(Operation::LIT, 16);
+      }
+      _instructions.emplace_back(Operation::WRT, 0);
+      continue;
+    }
+    break;
+  }
+  /*
   // 'begin'
   auto bg = nextToken();
   if (!bg.has_value() || bg.value().GetType() != TokenType::BEGIN)
-    return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrNoBegin);
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoBegin);
 
   // <主过程>
   auto err = analyseMain();
@@ -29,8 +82,7 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   // 'end'
   auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
-    return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrNoEnd);
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);*/
   return {};
 }
 
