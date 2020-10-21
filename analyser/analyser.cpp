@@ -472,6 +472,10 @@ std::optional<CompilationError> Analyser::analyseFactor() {
   switch (next.value().GetType()) {
       // 这里和 <语句序列> 类似，需要根据预读结果调用不同的子程序
       case TokenType::IDENTIFIER:{
+        if(!isDeclared(next.value().GetValueString()))
+          return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNotDeclared);
+        if(!isInitializedVariable(next.value().GetValueString()) && !isConstant(next.value().GetValueString()))
+          return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNotInitialized);
         int x = getIndex(next.value().GetValueString());
         _instructions.emplace_back(Operation::LOD, x);
         break;
