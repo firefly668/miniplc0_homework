@@ -79,9 +79,9 @@ std::optional<CompilationError> Analyser::analyseProgram() {
   if (err.has_value()) return err;
 
   // 'end'
-  auto ed = nextToken();
+  /*auto ed = nextToken();
   if (!ed.has_value() || ed.value().GetType() != TokenType::END)
-    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoEnd);*/
   return {};
 }
 
@@ -120,12 +120,12 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
 
     // <常量声明语句>
     next = nextToken();
-    if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
-      return std::make_optional<CompilationError>(_current_pos,
-                                                  ErrorCode::ErrNeedIdentifier);
-    if (isDeclared(next.value().GetValueString()))
-      return std::make_optional<CompilationError>(
-          _current_pos, ErrorCode::ErrDuplicateDeclaration);
+    if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER){
+      return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNeedIdentifier);
+    }
+    if (isDeclared(next.value().GetValueString())){
+      return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
+    }
     addConstant(next.value());
 
     // '='
@@ -141,9 +141,9 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
 
     // ';'
     next = nextToken();
-    if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
-      return std::make_optional<CompilationError>(_current_pos,
-                                                  ErrorCode::ErrNoSemicolon);
+    if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON){
+      return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoSemicolon);
+    }
     // 生成一次 LIT 指令加载常量
     _instructions.emplace_back(Operation::LIT, val);
   }
@@ -167,11 +167,9 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
     // <标识符>
     auto nextIdentity = nextToken();
     if (!nextIdentity.has_value() || nextIdentity.value().GetType() != TokenType::IDENTIFIER)
-      return std::make_optional<CompilationError>(_current_pos,
-                                                  ErrorCode::ErrNeedIdentifier);
+      return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNeedIdentifier);
     if (isDeclared(nextIdentity.value().GetValueString()))
-      return std::make_optional<CompilationError>(
-          _current_pos, ErrorCode::ErrDuplicateDeclaration);
+      return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
     // 变量可能没有初始化，仍然需要一次预读
     next = nextToken();
     if (!next.has_value()) {
@@ -194,8 +192,7 @@ std::optional<CompilationError> Analyser::analyseVariableDeclaration() {
       }
     }
     else{
-      return std::make_optional<CompilationError>(_current_pos,
-                                                  ErrorCode::ErrDuplicateDeclaration);
+      return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrDuplicateDeclaration);
     }
   }
   return {};
@@ -247,8 +244,7 @@ std::optional<CompilationError> Analyser::analyseStatementSequence() {
 
 // <常表达式> ::= [<符号>]<无符号整数>
 // 需要补全
-std::optional<CompilationError> Analyser::analyseConstantExpression(
-    int32_t &out) {
+std::optional<CompilationError> Analyser::analyseConstantExpression(int32_t &out) {
   // out 是常表达式的结果
   // 这里你要分析常表达式并且计算结果
   // 注意以下均为常表达式
@@ -346,8 +342,7 @@ std::optional<CompilationError> Analyser::analyseAssignmentStatement() {
   //";"
   next = nextToken();
   if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
-    return std::make_optional<CompilationError>(_current_pos,
-                                                ErrorCode::ErrNoSemicolon);
+    return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoSemicolon);
   // 生成相应的指令 STO
   _instructions.emplace_back(Operation::STO, x);
   return {};
@@ -424,8 +419,7 @@ std::optional<CompilationError> Analyser::analyseFactor() {
   auto next = nextToken();
   auto prefix = 1;
   if (!next.has_value())
-    return std::make_optional<CompilationError>(
-        _current_pos, ErrorCode::ErrIncompleteExpression);
+    return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
   if (next.value().GetType() == TokenType::PLUS_SIGN)
     prefix = 1;
   else if (next.value().GetType() == TokenType::MINUS_SIGN) {
