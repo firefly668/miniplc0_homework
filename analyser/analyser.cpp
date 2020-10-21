@@ -111,9 +111,9 @@ std::optional<CompilationError> Analyser::analyseConstantDeclaration() {
   // 示例函数，示例如何分析常量声明
 
   // 常量声明语句可能有 0 或无数个
-  _instructions.emplace_back(Operation::LIT, -1);
-  _instructions.emplace_back(Operation::WRT, 0);
   while (true) {
+    _instructions.emplace_back(Operation::LIT, -1);
+    _instructions.emplace_back(Operation::WRT, 0);
     // 预读一个 token，不然不知道是否应该用 <常量声明> 推导
     auto next = nextToken();
     if (!next.has_value()) return {};
