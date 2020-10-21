@@ -347,6 +347,8 @@ std::optional<CompilationError> Analyser::analyseAssignmentStatement() {
     return std::make_optional<CompilationError>(_current_pos,ErrorCode::ErrNoSemicolon);
   // 生成相应的指令 STO
   _instructions.emplace_back(Operation::STO, x);
+  _instructions.emplace_back(Operation::LIT, x);
+  _instructions.emplace_back(Operation::WRT, 0);
   return {};
 }
 
@@ -445,6 +447,8 @@ std::optional<CompilationError> Analyser::analyseFactor() {
       case TokenType::UNSIGNED_INTEGER:{
         int32_t x = atoi(next.value().GetValueString().c_str());
         _instructions.emplace_back(Operation::LIT, x);
+        _instructions.emplace_back(Operation::LIT, x);
+        _instructions.emplace_back(Operation::WRT, 0);
         break;
       }
       case TokenType::LEFT_BRACKET:{
